@@ -1,9 +1,7 @@
 package me.JelmarNL.minixRtspReceiver;
 
 import javax.sound.sampled.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class AudioSystemTest {
     public static void main(String[] args) {

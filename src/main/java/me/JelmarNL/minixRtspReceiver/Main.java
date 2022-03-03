@@ -12,7 +12,6 @@ import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
-import javax.sound.sampled.AudioSystem;
 import java.util.List;
 
 public class Main extends Application {
