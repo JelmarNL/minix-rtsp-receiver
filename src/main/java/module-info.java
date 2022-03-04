@@ -4,6 +4,7 @@ module me.JelmarNL.minixRtspReceiver {
     requires uk.co.caprica.vlcj.javafx;
     requires java.desktop;
     requires jdk.httpserver;
+    requires org.jetbrains.annotations;
 
     exports me.JelmarNL.minixRtspReceiver;
 }
