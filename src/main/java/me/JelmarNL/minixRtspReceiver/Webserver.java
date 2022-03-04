@@ -3,13 +3,13 @@ package me.JelmarNL.minixRtspReceiver;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import me.JelmarNL.minixRtspReceiver.util.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -28,29 +28,20 @@ public class Webserver {
     private static class IndexHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            ClassLoader classLoader = getClass().getClassLoader();
-            URI uri;
-            try {
-                uri = classLoader.getResource("index.html").toURI();
-            } catch (URISyntaxException | NullPointerException e) {
-                String error = "Page not available";
-                exchange.sendResponseHeaders(400, error.length());
+            String index = getResourceAsLines("/index.html");
+            Logger.info("HTTP", "GET /index.html");
+            if (index != null) {
+                exchange.sendResponseHeaders(200, index.length());
                 OutputStream responseBody = exchange.getResponseBody();
-                responseBody.write(error.getBytes());
+                responseBody.write(index.getBytes());
                 responseBody.close();
-                return;
+            } else {
+                String message = "<h1>Internal server error</h1>";
+                exchange.sendResponseHeaders(500, message.length());
+                OutputStream responseBody = exchange.getResponseBody();
+                responseBody.write(message.getBytes());
+                responseBody.close();
             }
-            List<String> strings = Files.readAllLines(Path.of(uri));
-            int length = 0;
-            for (String line : strings) {
-                length += line.length();
-            }
-            exchange.sendResponseHeaders(200, length);
-            OutputStream responseBody = exchange.getResponseBody();
-            for (String line : strings) {
-                responseBody.write(line.getBytes());
-            }
-            responseBody.close();
         }
     }
     
@@ -58,6 +49,7 @@ public class Webserver {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
+            Logger.info("HTTP", "GET: " + path);
             InputStream file = getResourceAsStream(path);
             if (file != null) {
                 exchange.sendResponseHeaders(200, file.available());
@@ -76,13 +68,18 @@ public class Webserver {
     
     @Nullable
     static InputStream getResourceAsStream(String path) {
-        return Webserver.class.getResourceAsStream(path);
+        InputStream inputStream = Webserver.class.getResourceAsStream(path);
+        if (inputStream == null) {
+            Logger.info("HTTP", "Page not found: " + path);
+        }
+        return inputStream;
     }
     
     @Nullable
     static String getResourceAsLines(String path) {
         URL url = Webserver.class.getResource(path);
         if (url == null) {
+            Logger.info("HTTP", "Page not found: " + path);
             return null;
         }
         StringBuilder sb = new StringBuilder();
@@ -92,6 +89,8 @@ public class Webserver {
                 sb.append(string).append("\n");
             }
         } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+            Logger.info("HTTP", "Cannot read lines from " + path);
             return null;
         }
         return sb.toString();

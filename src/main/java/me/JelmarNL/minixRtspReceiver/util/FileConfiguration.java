@@ -1,4 +1,4 @@
-package me.JelmarNL.minixRtspReceiver;
+package me.JelmarNL.minixRtspReceiver.util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,13 +15,23 @@ public class FileConfiguration {
     
     public FileConfiguration(String config) {
         String initDir = System.getProperty("user.dir");
-        file = new File(initDir + "/" + config + ".config");
-        if (!file.exists() && file.canWrite()) {
+        File dir = new File(initDir + "/config/");
+        file = new File(initDir + "/config/" + config + ".config");
+        if (!file.exists()) {
+            Logger.info("Config", "Configuration file " + config + " not found, creating it...");
             try {
-                file.createNewFile();
+                if (!dir.isDirectory()) {
+                    if (dir.mkdir()) Logger.info("Config", "Created configuration directories");
+                }
+                boolean created = file.createNewFile();
+                if (created) {
+                    Logger.info("Config", "Created new config file at " + initDir + "/config/" + config + ".config");
+                } else {
+                    throw new IOException("Config file not created");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Failed to create config file at " + initDir + "/" + config + ".config");
+                Logger.error( "Config", "Failed to create config file at " + initDir + "/config/" + config + ".config");
                 file = null;
                 return;
             }
@@ -34,7 +44,7 @@ public class FileConfiguration {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Failed to read config file at " + initDir + "/" + config + ".config");
+            Logger.error("Config", "Failed to read config file at " + initDir + "/config/" + config + ".config");
             file = null;
         }
     }
@@ -52,12 +62,14 @@ public class FileConfiguration {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Failed to write to config file at " + file.getAbsolutePath());
+                Logger.error("Config", "Failed to write to config file at " + file.getAbsolutePath());
             }
         }
     }
     
     public String getProperty(String key, String defaultValue) {
-        return properties.getOrDefault(key, defaultValue);
+        String value = properties.getOrDefault(key, defaultValue);
+        setProperty(key, value);
+        return value;
     }
 }

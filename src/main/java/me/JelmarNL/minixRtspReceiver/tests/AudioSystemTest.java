@@ -1,4 +1,6 @@
-package me.JelmarNL.minixRtspReceiver;
+package me.JelmarNL.minixRtspReceiver.tests;
+
+import me.JelmarNL.minixRtspReceiver.AudioRepeater;
 
 import javax.sound.sampled.*;
 import java.util.HashMap;
@@ -8,6 +10,11 @@ public class AudioSystemTest {
         getInputDevices().forEach((mixer, line) -> System.out.println(mixer.getMixerInfo().getName()));
         System.out.println();
         getOutputDevices().forEach((mixer, line) -> System.out.println(mixer.getMixerInfo().getName()));
+
+        TargetDataLine lineIn = (TargetDataLine) getInputDevices().values().toArray()[0];
+        SourceDataLine lineOut = (SourceDataLine) getOutputDevices().values().toArray()[0];
+        AudioRepeater audioRepeater = new AudioRepeater(lineIn, lineOut);
+        audioRepeater.run();
     }
     
     private static HashMap<Mixer, Line> getInputDevices() {

@@ -1,4 +1,4 @@
-package me.JelmarNL.minixRtspReceiver;
+package me.JelmarNL.minixRtspReceiver.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package me.JelmarNL.minixRtspReceiver;
+package me.JelmarNL.minixRtspReceiver.tests;
 
 import java.awt.*;
 

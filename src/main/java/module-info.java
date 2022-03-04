@@ -7,4 +7,6 @@ module me.JelmarNL.minixRtspReceiver {
     requires org.jetbrains.annotations;
 
     exports me.JelmarNL.minixRtspReceiver;
+    exports me.JelmarNL.minixRtspReceiver.tests;
+    exports me.JelmarNL.minixRtspReceiver.util;
 }

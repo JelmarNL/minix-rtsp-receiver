@@ -19,11 +19,14 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="contact" aria-selected="false">Output</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#status" type="button" role="tab" aria-controls="contact" aria-selected="false">Status</button>
+                </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
                     <br>
-                    <h3>IP</h3>
+                    <h4>IP</h4>
                     <label>
                         <input type="radio" name="contact" value="dhcp_on" checked> DHCP on
                     </label><br>
@@ -35,18 +38,18 @@
                     <input type="text" name="client ip" placeholder="<local ip placeholder>" value="192.168.1.12">
                     <br>
                     <br>
-                    <h3>Reboot</h3>
+                    <h4>Reboot</h4>
                     <button class="btn btn-danger">Reboot</button>
                 </div>
                 <div class="tab-pane fade" id="input" role="tabpanel" aria-labelledby="input-tab">
                     <br>
-                    <h3>RTSP stream settings</h3>
+                    <h4>RTSP stream settings</h4>
                     <input type="text" name="rtsp_url" placeholder="RTSP url">
                     <br>
                     <br>
                     <p>Stream: not found</p>
                     <br>
-                    <h3>Audio input device</h3>
+                    <h4>Audio input device</h4>
                     <select>
                         <option>Scarlett solo</option>
                         <option>Build in microphone</option>
@@ -55,12 +58,12 @@
                 </div>
                 <div class="tab-pane fade" id="output" role="tabpanel" aria-labelledby="output-tab">
                     <br>
-                    <h3>Output screen</h3>
+                    <h4>Output screen</h4>
                     <select>
                         <option>Display0</option>
                         <option>Display1</option>
                     </select>
-                    <h3>Output resolution</h3>
+                    <h4>Output resolution</h4>
                     <select>
                         <option>1920x1080x32bbp*60hz</option>
                         <option>1920x1080x32bbp*59hz</option>
@@ -69,12 +72,16 @@
                     <button>Update</button>
                     <br>
                     <br>
-                    <h3>Audio output device</h3>
+                    <h4>Audio output device</h4>
                     <select>
                         <option>Realtek blablabla</option>
                         <option>Scarlett Solo</option>
                     </select>
                     <button>Update</button>
+                </div>
+                <div class="tab-pane fade" id="status" role="tabpanel" aria-labelledby="status-tab">
+                    <h4>Uptime</h4>
+                    <p>00:00:00</p>
                 </div>
             </div>
         </div>
