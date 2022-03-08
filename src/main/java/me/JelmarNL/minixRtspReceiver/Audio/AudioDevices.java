@@ -1,21 +1,13 @@
-package me.JelmarNL.minixRtspReceiver.tests;
+package me.JelmarNL.minixRtspReceiver.Audio;
 
-import me.JelmarNL.minixRtspReceiver.Audio.AudioRepeater;
+import org.jetbrains.annotations.Nullable;
 
 import javax.sound.sampled.*;
 import java.util.HashMap;
+import java.util.Map;
 
-public class AudioSystemTest {
-    public static void main(String[] args) {
-        getInputDevices().forEach((mixer, line) -> System.out.println(mixer.getMixerInfo().getName()));
-        System.out.println();
-        getOutputDevices().forEach((mixer, line) -> System.out.println(mixer.getMixerInfo().getName()));
-        
-        AudioRepeater audioRepeater = new AudioRepeater();
-        audioRepeater.run();
-    }
-    
-    private static HashMap<Mixer, Line> getInputDevices() {
+public class AudioDevices {
+    public static HashMap<Mixer, Line> getInputDevices() {
         HashMap<Mixer, Line> inputs = new HashMap<>();
         for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
             Mixer mixer = AudioSystem.getMixer(mixerInfo);
@@ -32,7 +24,18 @@ public class AudioSystemTest {
         }
         return inputs;
     }
-    private static HashMap<Mixer, Line> getOutputDevices() {
+    
+    @Nullable
+    public static TargetDataLine getInputDeviceByName(String name) {
+        for (Map.Entry<Mixer, Line> line : getInputDevices().entrySet()) {
+            if (line.getKey().getMixerInfo().getName().equalsIgnoreCase(name)) {
+                return (TargetDataLine) line.getValue();
+            }
+        }
+        return null;
+    }
+
+    public static HashMap<Mixer, Line> getOutputDevices() {
         HashMap<Mixer, Line> outputs = new HashMap<>();
         for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
             Mixer mixer = AudioSystem.getMixer(mixerInfo);
@@ -48,5 +51,15 @@ public class AudioSystemTest {
             }
         }
         return outputs;
+    }
+    
+    @Nullable
+    public static SourceDataLine getOutputDeviceByName(String name) {
+        for (Map.Entry<Mixer, Line> line : getOutputDevices().entrySet()) {
+            if (line.getKey().getMixerInfo().getName().equalsIgnoreCase(name)) {
+                return (SourceDataLine) line.getValue();
+            }
+        }
+        return null;
     }
 }

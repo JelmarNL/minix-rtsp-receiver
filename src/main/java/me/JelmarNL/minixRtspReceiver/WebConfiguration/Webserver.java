@@ -1,8 +1,9 @@
-package me.JelmarNL.minixRtspReceiver;
+package me.JelmarNL.minixRtspReceiver.WebConfiguration;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointAudio;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,13 +17,35 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class Webserver {
-    public static void main(String[] args) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(80), 0);
+public class Webserver extends Thread {
+    private final HttpServer server;
+    
+    public Webserver() throws IOException {
+        server = HttpServer.create(new InetSocketAddress(80), 0);
+        //Index
         server.createContext("/", new IndexHandler());
+        //Resources, stylesheets and js
         server.createContext("/resources/", new ResourceHandler());
+        //Audio repeater endpoints
+        server.createContext("/endpoints/audio/getaudioinput", new EndpointAudio.GetAudioInput());
+        server.createContext("/endpoints/audio/setaudioinput", new EndpointAudio.SetAudioInput());
+        server.createContext("/endpoints/audio/getaudiooutput", new EndpointAudio.GetAudioOutput());
+        server.createContext("/endpoints/audio/setaudiooutput", new EndpointAudio.SetAudioOutput());
+        server.createContext("/endpoints/audio/restartaudio", new EndpointAudio.RestartAudio());
+        server.createContext("/endpoints/audio/getaudiorepeaterstatus", new EndpointAudio.GetAudioRepeaterStatus());
+        //RTSP Client endpoints
+        
+        
         server.setExecutor(null); // creates a default executor
+    }
+    
+    @Override
+    public void run() {
         server.start();
+    }
+    
+    public void end() {
+        server.stop(5);
     }
     
     private static class IndexHandler implements HttpHandler {
@@ -56,6 +79,7 @@ public class Webserver {
                 OutputStream responseBody = exchange.getResponseBody();
                 file.transferTo(responseBody);
                 responseBody.close();
+                file.close();
             } else {
                 String message = "<h1>File not found</h1>";
                 exchange.sendResponseHeaders(404, message.length());

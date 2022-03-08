@@ -9,4 +9,6 @@ module me.JelmarNL.minixRtspReceiver {
     exports me.JelmarNL.minixRtspReceiver;
     exports me.JelmarNL.minixRtspReceiver.tests;
     exports me.JelmarNL.minixRtspReceiver.util;
+    exports me.JelmarNL.minixRtspReceiver.WebConfiguration;
+    exports me.JelmarNL.minixRtspReceiver.Audio;
 }

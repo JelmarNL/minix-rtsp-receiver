@@ -1,4 +1,4 @@
-package me.JelmarNL.minixRtspReceiver;
+package me.JelmarNL.minixRtspReceiver.Audio;
 
 import me.JelmarNL.minixRtspReceiver.util.FileConfiguration;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
@@ -16,15 +16,15 @@ public class AudioRepeater extends Thread {
 
     /**
      * Load audio repeater on these lines
-     * @param lineIn
-     * @param lineOut
      */
-    public AudioRepeater(TargetDataLine lineIn, SourceDataLine lineOut) {
-        this.lineIn = lineIn;
-        this.lineOut = lineOut;
+    public AudioRepeater() {
         FileConfiguration audioConfig = new FileConfiguration("audio");
+        this.lineIn = AudioDevices.getInputDeviceByName(audioConfig.getProperty("inputDevice", "null"));
+        this.lineOut = AudioDevices.getOutputDeviceByName(audioConfig.getProperty("outputDevice", "null"));
         this.buffer = Integer.parseInt(audioConfig.getProperty("buffer", buffer + ""));
-        
+        if (this.lineIn == null || this.lineOut == null) {
+            Logger.error("AudioRepeater", "No input and/or output device selected/found, pick an audio device and restart repeater.");
+        }
     }
 
     /**
@@ -32,6 +32,10 @@ public class AudioRepeater extends Thread {
      */
     @Override
     public void run() {
+        if (lineIn == null || lineOut == null) {
+            running = false;
+            return;
+        }
         byte[] data = new byte[buffer];
         try {
             lineIn.open();
@@ -63,5 +67,13 @@ public class AudioRepeater extends Thread {
     public void end() {
         running = false;
         while (!done) Thread.onSpinWait();
+    }
+    
+    public String getStatus() {
+        if (running) {
+            return "Running";
+        } else {
+            return "Stopped";
+        }
     }
 }
