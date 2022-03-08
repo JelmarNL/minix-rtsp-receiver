@@ -45,21 +45,19 @@
                 <div class="tab-pane fade" id="input" role="tabpanel" aria-labelledby="input-tab">
                     <br>
                     <h4>Audio input device</h4>
-                    <select>
-                        <option>Scarlett solo</option>
-                        <option>Build in microphone</option>
+                    <select id="audioInput">
+                        <!-- automatically populated -->
                     </select>
                     <br>
                     <br>
                     <h4>Audio output device</h4>
-                    <select>
-                        <option>HDMI Capture card</option>
-                        <option>Audio line out</option>
+                    <select id="audioOutput">
+                        <!-- automatically populated -->
                     </select>
                     <br>
                     <br>
                     <br>
-                    <button class="btn btn-primary">Save and reload audio</button>
+                    <button class="btn btn-primary" id="restartAudio">Save and reload audio</button>
                     <p id="audioState">State: unknown</p>
                 </div>
                 <div class="tab-pane fade" id="output" role="tabpanel" aria-labelledby="output-tab">
@@ -86,7 +84,7 @@
                     <br>
                     <br>
                     <br>
-                    <button class="btn btn-primary">Save and reload video</button>
+                    <button class="btn btn-primary" id="restartVideo">Save and reload video</button>
                     <p id="videoState">State: Running</p>
                 </div>
                 <div class="tab-pane fade" id="status" role="tabpanel" aria-labelledby="status-tab">

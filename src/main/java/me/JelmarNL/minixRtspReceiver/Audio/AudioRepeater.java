@@ -8,6 +8,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 public class AudioRepeater extends Thread {
+    private final FileConfiguration audioConfig;
     private final TargetDataLine lineIn;
     private final SourceDataLine lineOut;
     private boolean running = true;
@@ -18,7 +19,7 @@ public class AudioRepeater extends Thread {
      * Load audio repeater on these lines
      */
     public AudioRepeater() {
-        FileConfiguration audioConfig = new FileConfiguration("audio");
+        audioConfig = new FileConfiguration("audio");
         this.lineIn = AudioDevices.getInputDeviceByName(audioConfig.getProperty("inputDevice", "null"));
         this.lineOut = AudioDevices.getOutputDeviceByName(audioConfig.getProperty("outputDevice", "null"));
         this.buffer = Integer.parseInt(audioConfig.getProperty("buffer", buffer + ""));
@@ -34,6 +35,7 @@ public class AudioRepeater extends Thread {
     public void run() {
         if (lineIn == null || lineOut == null) {
             running = false;
+            done = true;
             return;
         }
         byte[] data = new byte[buffer];
@@ -75,5 +77,9 @@ public class AudioRepeater extends Thread {
         } else {
             return "Stopped";
         }
+    }
+
+    public FileConfiguration getAudioConfig() {
+        return audioConfig;
     }
 }
