@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointAudio;
+import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointDevice;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,10 +16,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Webserver extends Thread {
     private final HttpServer server;
+    private final List<String> log = new ArrayList<>();
     
     public Webserver() throws IOException {
         server = HttpServer.create(new InetSocketAddress(80), 0);
@@ -26,6 +29,10 @@ public class Webserver extends Thread {
         server.createContext("/", new IndexHandler());
         //Resources, stylesheets and js
         server.createContext("/resources/", new ResourceHandler());
+        //Device endpoints
+        server.createContext("/endpoints/device/getuptime", new EndpointDevice.GetDeviceUptime());
+        server.createContext("/endpoints/device/getconsole", new EndpointDevice.GetDeviceConsole());
+        
         //Audio repeater endpoints
         server.createContext("/endpoints/audio/getaudioinput", new EndpointAudio.GetAudioInput());
         server.createContext("/endpoints/audio/setaudioinput", new EndpointAudio.SetAudioInput());
@@ -51,8 +58,8 @@ public class Webserver extends Thread {
     private static class IndexHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            String index = getResourceAsLines("/index.html");
             Logger.info("HTTP", "GET /index.html");
+            String index = getResourceAsLines("/index.html");
             if (index != null) {
                 exchange.sendResponseHeaders(200, index.length());
                 OutputStream responseBody = exchange.getResponseBody();
@@ -72,7 +79,7 @@ public class Webserver extends Thread {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
-            Logger.info("HTTP", "GET: " + path);
+            //Logger.info("HTTP", "GET: " + path);
             InputStream file = getResourceAsStream(path);
             if (file != null) {
                 exchange.sendResponseHeaders(200, file.available());
@@ -118,5 +125,15 @@ public class Webserver extends Thread {
             return null;
         }
         return sb.toString();
+    }
+    
+    public void addLog(String log) {
+        if (this.log.size() > 100) {
+            this.log.remove(0);
+        }
+        this.log.add(log);
+    }
+    public List<String> getLog() {
+        return log;
     }
 }

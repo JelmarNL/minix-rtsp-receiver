@@ -13,7 +13,6 @@ public class DisplayPropertiesTest {
             for (DisplayMode displayMode : displayModes) {
                 System.out.println(displayMode.toString());
             }
-            System.out.println();
         }
     }
 }

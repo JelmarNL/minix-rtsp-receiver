@@ -1,10 +1,12 @@
 package me.JelmarNL.minixRtspReceiver;
 
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory;
@@ -65,11 +67,21 @@ public class RtspPlayer extends Application {
             System.out.println("Specify a single MRL");
             System.exit(-1);
         }
-
+        
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: black;");
         stage.setMaximized(true);
         stage.setFullScreen(true);
+        
+        System.out.println();
+        for (Screen screen : Screen.getScreens()) {
+            Rectangle2D visualBounds = screen.getVisualBounds();
+            Rectangle2D bounds = screen.getBounds();
+            System.out.println("Visual bounds: " + visualBounds.getWidth() + "x" + visualBounds.getHeight());
+            System.out.println("Bounds: " + bounds.getWidth() + "x" + bounds.getHeight());
+            System.out.println();
+        }
+        
 
         videoImageView.fitWidthProperty().bind(root.widthProperty());
         videoImageView.fitHeightProperty().bind(root.heightProperty());

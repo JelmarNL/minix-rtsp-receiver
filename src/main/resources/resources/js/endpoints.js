@@ -1,3 +1,21 @@
+//
+//DEVICE
+//
+setInterval(function() {
+    $.get("/endpoints/device/getuptime", function (data) {
+        $("#uptime").text(data);
+    });
+}, 1000);
+
+setInterval(function() {
+    $.get("/endpoints/device/getconsole", function (data) {
+        $("#console").html(data);
+    });
+}, 5000);
+
+//
+//AUDIO
+//
 $.get("/endpoints/audio/getaudioinput", function(data) {
     $("#audioInput").html(data);
 });

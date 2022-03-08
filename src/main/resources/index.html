@@ -20,9 +20,6 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="contact" aria-selected="false">RTSP Client</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#status" type="button" role="tab" aria-controls="contact" aria-selected="false">Status</button>
-                </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
@@ -39,8 +36,26 @@
                     <input type="text" name="client ip" placeholder="<local ip placeholder>" value="192.168.1.12">
                     <br>
                     <br>
+                    <h4>Uptime</h4>
+                    <p id="uptime">Not responding</p>
+                    <br>
                     <h4>Reboot</h4>
                     <button class="btn btn-danger">Reboot</button>
+                    <br>
+                    <br>
+                    <h4>Console</h4>
+                    <style>
+                        #console {
+                            height: 20em;
+                            overflow: scroll;
+                        }
+                        #console > p {
+                            margin-bottom: 0;
+                        }
+                    </style>
+                    <div class="border" id="console">
+                        <p>Update in 5 seconds</p>
+                    </div>
                 </div>
                 <div class="tab-pane fade" id="input" role="tabpanel" aria-labelledby="input-tab">
                     <br>
@@ -86,16 +101,6 @@
                     <br>
                     <button class="btn btn-primary" id="restartVideo">Save and reload video</button>
                     <p id="videoState">State: Running</p>
-                </div>
-                <div class="tab-pane fade" id="status" role="tabpanel" aria-labelledby="status-tab">
-                    <br>
-                    <h4>Uptime</h4>
-                    <p>00:00:00h</p>
-                    <br>
-                    <h4>Console</h4>
-                    <div class="border">
-                        <p>Starting system...</p>
-                    </div>
                 </div>
             </div>
         </div>

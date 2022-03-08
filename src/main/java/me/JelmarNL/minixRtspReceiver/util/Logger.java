@@ -1,21 +1,31 @@
 package me.JelmarNL.minixRtspReceiver.util;
 
+import me.JelmarNL.minixRtspReceiver.Main;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
     public static void info(String module, String text) {
-        System.out.println(getTimeStamp() + "[INFO][" + module + "]: " + text);
+        String info = getTimeStamp() + "[INFO][" + module + "]: " + text;
+        System.out.println(info);
+        Main.webserver.addLog(info);
     }
     public static void warning(String module, String text) {
-        System.out.println(getTimeStamp() + "[WARN][" + module + "]: " + text);
+        String warning = getTimeStamp() + "[WARN][" + module + "]: " + text;
+        System.out.println(warning);
+        Main.webserver.addLog(warning);
     }
     public static void error(String module, String text) {
-        System.out.println(getTimeStamp() + "[ERRO][" + module + "]: " + text);
+        String error = getTimeStamp() + "[ERRO][" + module + "]: " + text;
+        System.out.println(error);
+        Main.webserver.addLog(error);
     }
     
     public static void debug(String text) {
-        System.out.println(getTimeStamp() + "[INFO][DEBUG]: " + text);
+        String debug = getTimeStamp() + "[INFO][DEBUG]: " + text;
+        System.out.println(debug);
+        Main.webserver.addLog(debug);
     }
     
     private static String getTimeStamp() {
