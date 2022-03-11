@@ -16,7 +16,6 @@ public class EndpointDevice {
         public void handle(HttpExchange exchange) throws IOException {
             Instant now = Instant.now();
             Duration uptime = Duration.between(Main.appStartTime, now);
-            //TODO: Numberformat 01 instead of 1
             String response = uptime.toDaysPart() + ":" + String.format("%02d", uptime.toHoursPart()) + ":" + String.format("%02d", uptime.toMinutesPart()) + ":" + String.format("%02d", uptime.toSecondsPart());
             exchange.sendResponseHeaders(200, response.length());
             OutputStream responseBody = exchange.getResponseBody();
@@ -38,6 +37,18 @@ public class EndpointDevice {
             OutputStream responseBody = exchange.getResponseBody();
             responseBody.write(response.getBytes());
             responseBody.close();
+        }
+    }
+
+    public static class RestartDevice implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String response = "Restarting...";
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream responseBody = exchange.getResponseBody();
+            responseBody.write(response.getBytes());
+            responseBody.close();
+            Main.reboot();
         }
     }
 }

@@ -13,6 +13,14 @@ setInterval(function() {
     });
 }, 5000);
 
+$("#reboot").on("click", function() {
+    if (confirm("Are you sure you want to reboot this device?")) {
+        $.get("/endpoints/device/restartdevice", function(data) {
+            alert(data);
+        });
+    }
+});
+
 //
 //AUDIO
 //
@@ -24,29 +32,36 @@ $.get("/endpoints/audio/getaudiooutput", function(data) {
     $("#audioOutput").html(data);
 });
 
-$("#audioInput").on("change", function() {
-    this.value;
-    $.get("/endpoints/audio/setaudioinput", {input: this.value}, function(data) {
-        alert("Set audio input to: \n" + data);
-    });
-});
-
-$("#audioOutput").on("change", function() {
-    this.value;
-    $.get("/endpoints/audio/setaudiooutput", {input: this.value}, function(data) {
-        alert("Set audio output to: \n" + data);
-    });
-});
-
 $("#restartAudio").on("click", function() {
-    $.get("/endpoints/audio/restartaudio", function(data) {
-        alert("Restart: \n" + data);
+    let input = $("#audioInput").val();
+    let output = $("#audioOutput").val();
+    $.get("/endpoints/audio/restartaudio", {"input": input, "output": output}, function(data) {
+        alert("Audio restart: \n" + data);
         location.reload();
     });
 });
 
-$.get("/endpoints/audio/getaudiorepeaterstatus", function(data) {
-    $("#audioState").text("State: " + data);
+setInterval(function() {
+    $.get("/endpoints/audio/getaudiorepeaterstatus", function (data) {
+        $("#audioState").text("State: " + data);
+    });
+}, 5000);
+
+//
+//VIDEO
+//
+$("#restartVideo").on("click", function() {
+    let cameraIp = btoa($("#cameraIp").val());
+    let setupCommands = btoa($("#setupCommands").val());
+    let streamUrl = btoa($("#streamUrl").val());
+    $.get("/endpoints/video/restartvideo", {"cameraIp": cameraIp, "setupCommands": setupCommands, "streamUrl": streamUrl}, function(data) {
+        alert("Video restart: \n" + data);
+        location.reload();
+    });
 });
 
-//TODO: Lock and unlock save button till set request is done
+setInterval(function() {
+    $.get("/endpoints/video/getvideostatus", function (data) {
+        $("#videoState").text("State: " + data);
+    });
+}, 5000);

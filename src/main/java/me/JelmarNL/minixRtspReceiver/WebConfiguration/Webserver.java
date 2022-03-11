@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointAudio;
 import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointDevice;
+import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointVideo;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,17 +33,17 @@ public class Webserver extends Thread {
         //Device endpoints
         server.createContext("/endpoints/device/getuptime", new EndpointDevice.GetDeviceUptime());
         server.createContext("/endpoints/device/getconsole", new EndpointDevice.GetDeviceConsole());
-        
+        server.createContext("/endpoints/device/restartdevice", new EndpointDevice.RestartDevice());
         //Audio repeater endpoints
         server.createContext("/endpoints/audio/getaudioinput", new EndpointAudio.GetAudioInput());
-        server.createContext("/endpoints/audio/setaudioinput", new EndpointAudio.SetAudioInput());
         server.createContext("/endpoints/audio/getaudiooutput", new EndpointAudio.GetAudioOutput());
-        server.createContext("/endpoints/audio/setaudiooutput", new EndpointAudio.SetAudioOutput());
         server.createContext("/endpoints/audio/restartaudio", new EndpointAudio.RestartAudio());
         server.createContext("/endpoints/audio/getaudiorepeaterstatus", new EndpointAudio.GetAudioRepeaterStatus());
         //RTSP Client endpoints
-        
-        
+        server.createContext("/endpoints/video/restartvideo", new EndpointVideo.RestartVideo());
+        server.createContext("/endpoints/video/getvideostatus", new EndpointVideo.GetVideoStatus());
+        server.createContext("/endpoints/video/getdetectedcameras", new EndpointVideo.GetNetworkScan());
+        //Executor
         server.setExecutor(null); // creates a default executor
     }
     

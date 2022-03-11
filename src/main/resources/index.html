@@ -24,23 +24,11 @@
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
                     <br>
-                    <h4>IP</h4>
-                    <label>
-                        <input type="radio" name="contact" value="dhcp_on" checked> DHCP on
-                    </label><br>
-                    <label>
-                        <input type="radio" name="contact" value="dhcp_off"> DHCP off
-                    </label>
-                    <br>
-                    <br>
-                    <input type="text" name="client ip" placeholder="<local ip placeholder>" value="192.168.1.12">
-                    <br>
-                    <br>
                     <h4>Uptime</h4>
                     <p id="uptime">Not responding</p>
                     <br>
                     <h4>Reboot</h4>
-                    <button class="btn btn-danger">Reboot</button>
+                    <button class="btn btn-danger" id="reboot">Reboot</button>
                     <br>
                     <br>
                     <h4>Console</h4>
@@ -77,30 +65,29 @@
                 </div>
                 <div class="tab-pane fade" id="output" role="tabpanel" aria-labelledby="output-tab">
                     <br>
-                    <h4>RTSP stream settings</h4>
-                    <input type="text" name="rtsp_url" placeholder="RTSP url">
+                    <h4>Camera IP</h4>
+                    <input type="text" id="cameraIp" placeholder="0.0.0.0:554" value="192.168.0.10:554">
+                    <p>Discovered camera's:</p>
+                    <p>TODO: ICMP ping the subnet in another thread and check if its a camera with http info request</p>
                     <br>
                     <br>
-                    <p>Stream: not found</p>
+                    <h4>Setup commands</h4>
+                    <label style="width: 100%; height: 10em">
+                        One setting request per line, comment lines denoted with '>'.
+                        <textarea id="setupCommands" style="width: 100%; height: 100%">
+> should set resolution to 1080p59.94 (10h) or 1080p29.97 (14h)
+http://%ip%/cgi-bin/aw_cam?cmd=OSA:87:10h&res=1
+</textarea>
+                    </label>
                     <br>
-                    <h4>Output screen</h4>
-                    <select>
-                        <option>Display0</option>
-                        <option>Display1</option>
-                    </select>
                     <br>
-                    <br>
-                    <h4>Output resolution</h4>
-                    <select>
-                        <option>1920x1080x32bbp*60hz</option>
-                        <option>1920x1080x32bbp*59hz</option>
-                        <option>1920x1080x32bbp*29hz</option>
-                    </select>
+                    <h4>RTSP stream url</h4>
+                    <input type="text" id="streamUrl" name="rtsp_url" placeholder="RTSP url" style="width: 100%" value="rtsp://%ip%/mediainput/h264/stream_1">
                     <br>
                     <br>
                     <br>
                     <button class="btn btn-primary" id="restartVideo">Save and reload video</button>
-                    <p id="videoState">State: Running</p>
+                    <p id="videoState">State: unknown</p>
                 </div>
             </div>
         </div>

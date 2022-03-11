@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import me.JelmarNL.minixRtspReceiver.Audio.AudioDevices;
 import me.JelmarNL.minixRtspReceiver.Audio.AudioRepeater;
 import me.JelmarNL.minixRtspReceiver.Main;
+import me.JelmarNL.minixRtspReceiver.util.Logger;
 
 import javax.sound.sampled.Mixer;
 import java.io.IOException;
@@ -36,19 +37,6 @@ public class EndpointAudio {
         }
     }
 
-    public static class SetAudioInput implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String device = exchange.getRequestURI().getQuery().split("=", 2)[1];
-            Main.audioRepeater.getAudioConfig().setProperty("inputDevice", device);
-            String response = "OK " + device;
-            exchange.sendResponseHeaders(200, response.length());
-            OutputStream responseBody = exchange.getResponseBody();
-            responseBody.write(response.getBytes());
-            responseBody.close();
-        }
-    }
-
     public static class GetAudioOutput implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -70,23 +58,17 @@ public class EndpointAudio {
             responseBody.close();
         }
     }
-
-    public static class SetAudioOutput implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String device = exchange.getRequestURI().getQuery().split("=", 2)[1];
-            Main.audioRepeater.getAudioConfig().setProperty("outputDevice", device);
-            String response = "OK " + device;
-            exchange.sendResponseHeaders(200, response.length());
-            OutputStream responseBody = exchange.getResponseBody();
-            responseBody.write(response.getBytes());
-            responseBody.close();
-        }
-    }
     
     public static class RestartAudio implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+            String[] parts = exchange.getRequestURI().getQuery().split("&");
+            String inputDevice = parts[0].split("=", 2)[1];
+            String outputDevice = parts[1].split("=", 2)[1];
+            Main.audioRepeater.getAudioConfig().setProperty("inputDevice", inputDevice);
+            Main.audioRepeater.getAudioConfig().setProperty("outputDevice", outputDevice);
+            Logger.info("AudioRepeater", "Set input device to: " + inputDevice);
+            Logger.info("AudioRepeater", "Set output device to: " + outputDevice);
             Main.audioRepeater.end();
             Main.audioRepeater = new AudioRepeater();
             Main.audioRepeater.start();

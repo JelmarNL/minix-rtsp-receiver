@@ -40,7 +40,11 @@ public class FileConfiguration {
             List<String> strings = Files.readAllLines(Path.of(file.toURI()));
             for (String string : strings) {
                 String[] parts = string.split(":", 2);
-                properties.put(parts[0], parts[1]);
+                if (parts.length < 2) {
+                    properties.put(parts[0], "");
+                } else {
+                    properties.put(parts[0], parts[1]);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

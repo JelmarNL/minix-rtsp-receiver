@@ -29,6 +29,6 @@ public class Logger {
     }
     
     private static String getTimeStamp() {
-        return "[" + new SimpleDateFormat("HH.mm.ss").format(new Date()) + "]";
+        return "[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]";
     }
 }
