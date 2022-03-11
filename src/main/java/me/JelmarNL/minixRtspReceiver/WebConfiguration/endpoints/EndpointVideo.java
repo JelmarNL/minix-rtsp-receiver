@@ -35,6 +35,21 @@ public class EndpointVideo {
         }
     }
 
+    public static class GetVideoConfig implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            FileConfiguration config = new FileConfiguration("rtsp");
+            String cameraIp = Base64.getEncoder().encodeToString(config.getProperty("cameraIp", "0.0.0.0:554").getBytes());
+            String setupCommands = config.getProperty("setupCommands", "");
+            String streamUrl = Base64.getEncoder().encodeToString(config.getProperty("streamUrl", "rtsp://%ip%/mediainput/h264/stream_1").getBytes());
+            String responseString = cameraIp + "||" + setupCommands + "||" + streamUrl;
+            exchange.sendResponseHeaders(200, responseString.length());
+            OutputStream responseBody = exchange.getResponseBody();
+            responseBody.write(responseString.getBytes());
+            responseBody.close();
+        }
+    }
+
     public static class GetVideoStatus implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {

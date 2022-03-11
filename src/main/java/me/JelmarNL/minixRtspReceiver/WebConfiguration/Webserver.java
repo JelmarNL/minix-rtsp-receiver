@@ -40,6 +40,7 @@ public class Webserver extends Thread {
         server.createContext("/endpoints/audio/restartaudio", new EndpointAudio.RestartAudio());
         server.createContext("/endpoints/audio/getaudiorepeaterstatus", new EndpointAudio.GetAudioRepeaterStatus());
         //RTSP Client endpoints
+        server.createContext("/endpoints/video/getvideoconfig", new EndpointVideo.GetVideoConfig());
         server.createContext("/endpoints/video/restartvideo", new EndpointVideo.RestartVideo());
         server.createContext("/endpoints/video/getvideostatus", new EndpointVideo.GetVideoStatus());
         server.createContext("/endpoints/video/getdetectedcameras", new EndpointVideo.GetNetworkScan());

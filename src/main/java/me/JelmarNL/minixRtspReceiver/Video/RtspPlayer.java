@@ -22,6 +22,8 @@ public class RtspPlayer extends Thread {
     private String streamUrl;
     private String state;
     private static Stage stage;
+    //Check if it's the first time we start javafx cuz it complains otherwise
+    private static boolean firstLaunch = true;
     
     @Override
     public void run() {
@@ -33,6 +35,7 @@ public class RtspPlayer extends Thread {
         streamUrl = RtspConfig.getProperty("streamUrl", "rtsp://%ip%/mediainput/h264/stream_1");
         //Test stream:
         //streamUrl = "rtsp://demo:demo@ipvmdemo.dyndns.org:5541/onvif-media/media.amp?profile=profile_1_h264&sessiontimeout=60&streamtype=unicast";
+        //streamUrl = "rtsp://localhost/";
         
         String base = RtspConfig.getProperty("libUrl", "C:/Program Files/VideoLAN/VLC/");
         try {
@@ -47,9 +50,7 @@ public class RtspPlayer extends Thread {
             return;
         }
         Logger.info("RtspPlayer", "Loaded player");
-        if (Main.isFirstLaunch()) {
-            Logger.debug("first");
-            Main.setJavaFxLaunched();
+        if (isFirstLaunch()) {
             Platform.setImplicitExit(false);
             launch(Player.class);
         } else {
@@ -84,6 +85,13 @@ public class RtspPlayer extends Thread {
         Player.instance.stop();
         state = "stopped";
     }
+
+    private static boolean isFirstLaunch() {
+        return firstLaunch;
+    }
+    private static void setJavaFxLaunched() {
+        firstLaunch = false;
+    }
     
     public static class Player extends Application {
         private static EmbeddedMediaPlayer embeddedMediaPlayer;
@@ -104,8 +112,6 @@ public class RtspPlayer extends Thread {
             //Create window
             BorderPane root = new BorderPane();
             root.setStyle("-fx-background-color: black;");
-            stage.setMaximized(true);
-            stage.setFullScreen(true);
             
             videoImageView.fitWidthProperty().bind(root.widthProperty());
             videoImageView.fitHeightProperty().bind(root.heightProperty());
@@ -116,12 +122,32 @@ public class RtspPlayer extends Thread {
             stage.setTitle("Rtsp camera & usb audio player");
             stage.setScene(scene);
             stage.show();
-            
+
+            //Non of this seems to hide the taskbar (at least when not playing)
+            //            stage.setFullScreen(false);
+            //stage.setMaximized(true);
+            //Fullscreen does not work after a restart:
+//            if (isFirstLaunch()) {
+//                stage.initStyle(StageStyle.UNDECORATED);
+//            }
+//            Screen screen = Screen.getPrimary();
+//            stage.setX(screen.getVisualBounds().getMinX());
+//            stage.setY(screen.getVisualBounds().getMinY());
+//            stage.setWidth(screen.getVisualBounds().getWidth());
+//            stage.setHeight(screen.getVisualBounds().getHeight());
+            stage.setFullScreenExitHint("");
+//            stage.requestFocus();
+//            stage.toFront();
+//            stage.setResizable(false);
+            stage.setFullScreen(true);
+
             RtspPlayer.stage = stage;
             
             embeddedMediaPlayer.media().play(Main.rtspPlayer.createStreamUrl());
             Main.rtspPlayer.state = "Running";
             Logger.info("RtspPlayer", "Stream open");
+
+            setJavaFxLaunched();
         }
 
         @Override

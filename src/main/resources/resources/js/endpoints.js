@@ -50,6 +50,13 @@ setInterval(function() {
 //
 //VIDEO
 //
+$.get("/endpoints/video/getvideoconfig", function(data) {
+    data = data.split("||");
+    $("#cameraIp").val(atob(data[0]));
+    $("#setupCommands").val(atob(data[1]));
+    $("#streamUrl").val(atob(data[2]));
+});
+
 $("#restartVideo").on("click", function() {
     let cameraIp = btoa($("#cameraIp").val());
     let setupCommands = btoa($("#setupCommands").val());

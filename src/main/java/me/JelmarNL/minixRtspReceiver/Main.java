@@ -14,8 +14,6 @@ public class Main {
     public static AudioRepeater audioRepeater;
     public static RtspPlayer rtspPlayer;
     public static Instant appStartTime;
-    //Check if it's the first time we start javafx cuz it complains otherwise
-    private static boolean firstLaunch = true;
     
     public static void main(String[] args) {
         System.out.println("[--:--:--][INFO][Main]: Loading application...");
@@ -57,13 +55,5 @@ public class Main {
             e.printStackTrace();
             Logger.error("Main", "Could not reboot pc");
         }
-    }
-
-    public static boolean isFirstLaunch() {
-        return firstLaunch;
-    }
-    public static void setJavaFxLaunched() {
-        Logger.debug("Set firstLaunch to false");
-        firstLaunch = false;
     }
 }
