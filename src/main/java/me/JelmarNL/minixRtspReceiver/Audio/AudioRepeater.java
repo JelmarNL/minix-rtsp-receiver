@@ -14,6 +14,7 @@ public class AudioRepeater extends Thread {
     private boolean running = true;
     private volatile boolean done = false;
     private int buffer = 2048;
+    private String stoppedReason = null;
 
     /**
      * Load audio repeater on these lines
@@ -39,6 +40,7 @@ public class AudioRepeater extends Thread {
             running = false;
             done = true;
             Logger.error("AudioRepeater", "Some lines do not exist, repeater not started. Check if a microphone and speaker are available.");
+            stoppedReason = "The previously selected audio device is no longer available. Pick and save a new one";
             return;
         }
         byte[] data = new byte[buffer];
@@ -82,7 +84,11 @@ public class AudioRepeater extends Thread {
         if (running) {
             return "Running";
         } else {
-            return "Stopped";
+            if (stoppedReason == null) {
+                return "Stopped";
+            } else {
+                return stoppedReason;
+            }
         }
     }
 
