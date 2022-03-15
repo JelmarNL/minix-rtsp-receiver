@@ -9,12 +9,11 @@ import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointVideo;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,10 +25,8 @@ public class Webserver extends Thread {
     
     public Webserver() throws IOException {
         server = HttpServer.create(new InetSocketAddress(80), 0);
-        //Index
-        server.createContext("/", new IndexHandler());
-        //Resources, stylesheets and js
-        server.createContext("/resources/", new ResourceHandler());
+        //Index, resources, stylesheets and js
+        server.createContext("/", new ResourceHandler());
         //Device endpoints
         server.createContext("/endpoints/device/getuptime", new EndpointDevice.GetDeviceUptime());
         server.createContext("/endpoints/device/getconsole", new EndpointDevice.GetDeviceConsole());
@@ -57,30 +54,13 @@ public class Webserver extends Thread {
         server.stop(5);
     }
     
-    private static class IndexHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            Logger.info("HTTP", "GET /index.html");
-            String index = getResourceAsLines("/index.html");
-            if (index != null) {
-                exchange.sendResponseHeaders(200, index.length());
-                OutputStream responseBody = exchange.getResponseBody();
-                responseBody.write(index.getBytes());
-                responseBody.close();
-            } else {
-                String message = "<h1>Internal server error</h1>";
-                exchange.sendResponseHeaders(500, message.length());
-                OutputStream responseBody = exchange.getResponseBody();
-                responseBody.write(message.getBytes());
-                responseBody.close();
-            }
-        }
-    }
-    
     private static class ResourceHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
+            if (path.equalsIgnoreCase("/")) {
+                path = "/resources/index.html";
+            }
             //Logger.info("HTTP", "GET: " + path);
             InputStream file = getResourceAsStream(path);
             if (file != null) {
@@ -110,18 +90,27 @@ public class Webserver extends Thread {
     
     @Nullable
     static String getResourceAsLines(String path) {
-        URL url = Webserver.class.getResource(path);
-        if (url == null) {
+        Logger.debug("Loading lines");
+        //URL url = Webserver.class.getResource(path);
+        ClassLoader classLoader = Webserver.class.getClassLoader();
+        File file;
+        try {
+            file = new File(classLoader.getResource(path).getFile());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return null;
+        }
+        if (!file.exists()) {
             Logger.info("HTTP", "Page not found: " + path);
             return null;
         }
         StringBuilder sb = new StringBuilder();
         try {
-            List<String> strings = Files.readAllLines(Path.of(url.toURI()));
+            List<String> strings = Files.readAllLines(Path.of(file.toURI()));
             for (String string : strings) {
                 sb.append(string).append("\n");
             }
-        } catch (URISyntaxException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Logger.info("HTTP", "Cannot read lines from " + path);
             return null;

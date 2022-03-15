@@ -145,7 +145,7 @@ public class RtspPlayer extends Thread {
             
             embeddedMediaPlayer.media().play(Main.rtspPlayer.createStreamUrl());
             Main.rtspPlayer.state = "Running";
-            Logger.info("RtspPlayer", "Stream open");
+            Logger.info("RtspPlayer", "Stream connecting...");
 
             setJavaFxLaunched();
         }

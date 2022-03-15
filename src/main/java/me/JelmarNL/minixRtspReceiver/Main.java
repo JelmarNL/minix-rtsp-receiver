@@ -27,6 +27,7 @@ public class Main {
             Logger.error("Main", "Failed to start webserver, exiting application.");
             return;
         }
+        //Start webserver
         webserver.start();
         //Start audio repeater
         audioRepeater = new AudioRepeater();
