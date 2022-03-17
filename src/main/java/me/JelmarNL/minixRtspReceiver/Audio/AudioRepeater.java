@@ -50,6 +50,7 @@ public class AudioRepeater extends Thread {
         } catch (LineUnavailableException e) {
             e.printStackTrace();
             Logger.error("AudioRepeater", "Could not open audio lines.");
+            stoppedReason = "Line not available, please reboot device after selecting lines.";
             running = false;
             done = true;
             return;
