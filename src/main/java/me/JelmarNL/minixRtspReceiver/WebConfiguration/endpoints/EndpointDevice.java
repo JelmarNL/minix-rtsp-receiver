@@ -28,7 +28,7 @@ public class EndpointDevice {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             StringBuilder builder = new StringBuilder();
-            List<String> log = Main.webserver.getLog();
+            List<String> log = Main.getLog();
             for (String entry : log) {
                 builder.append("<p>").append(entry).append("</p>\n");
             }

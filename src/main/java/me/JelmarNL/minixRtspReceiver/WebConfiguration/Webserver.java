@@ -16,12 +16,10 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Webserver extends Thread {
     private final HttpServer server;
-    private final List<String> log = new ArrayList<>();
     
     public Webserver() throws IOException {
         server = HttpServer.create(new InetSocketAddress(80), 0);
@@ -116,15 +114,5 @@ public class Webserver extends Thread {
             return null;
         }
         return sb.toString();
-    }
-    
-    public void addLog(String log) {
-        if (this.log.size() > 100) {
-            this.log.remove(0);
-        }
-        this.log.add(log);
-    }
-    public List<String> getLog() {
-        return log;
     }
 }

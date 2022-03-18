@@ -8,8 +8,11 @@ import me.JelmarNL.minixRtspReceiver.util.Logger;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
+    private static final List<String> logs = new ArrayList<>();
     public static Webserver webserver;
     public static AudioRepeater audioRepeater;
     public static RtspPlayer rtspPlayer;
@@ -56,5 +59,15 @@ public class Main {
             e.printStackTrace();
             Logger.error("Main", "Could not reboot pc");
         }
+    }
+
+    public static void addLog(String log) {
+        if (logs.size() > 100) {
+            logs.remove(0);
+        }
+        logs.add(log);
+    }
+    public static List<String> getLog() {
+        return logs;
     }
 }
