@@ -71,6 +71,13 @@ public class RtspPlayer extends Thread {
     private String createStreamUrl() {
         return streamUrl.replace("%ip%", cameraIp);
     }
+    private String[] getStreamOptions() {
+        return new String[]{
+                ":live-caching=0", 
+                ":sout-mux-caching=10",
+                "network-caching=300"
+        };
+    }
     
     public void end() {
         Player.instance.stop();
@@ -78,8 +85,13 @@ public class RtspPlayer extends Thread {
     }
     public void restart() {
         Main.rtspPlayer.state = "Restarting";
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Logger.verbose("RtspPlayer", "Reconnect cooldown was interrupted");
+        }
         Platform.runLater(() -> {
-            Player.embeddedMediaPlayer.media().play(createStreamUrl());
+            Player.embeddedMediaPlayer.media().play(createStreamUrl(), getStreamOptions());
         });
         Main.rtspPlayer.state = "Running";
     }
@@ -168,7 +180,7 @@ public class RtspPlayer extends Thread {
 
             RtspPlayer.stage = stage;
             
-            embeddedMediaPlayer.media().play(Main.rtspPlayer.createStreamUrl());
+            embeddedMediaPlayer.media().play(Main.rtspPlayer.createStreamUrl(), Main.rtspPlayer.getStreamOptions());
             Main.rtspPlayer.state = "Running";
             Logger.info("RtspPlayer", "Stream connecting...");
 
@@ -177,13 +189,9 @@ public class RtspPlayer extends Thread {
 
         @Override
         public final void stop() {
-            Logger.debug("1");
             embeddedMediaPlayer.controls().stop();
-            Logger.debug("2");
             embeddedMediaPlayer.release();
-            Logger.debug("3");
             mediaPlayerFactory.release();
-            Logger.debug("4");
         }
     }
 }
