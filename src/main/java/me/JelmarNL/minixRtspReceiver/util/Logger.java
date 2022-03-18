@@ -6,6 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Logger {
+    public static void verbose(String module, String text) {
+        String verbose = getTimeStamp() + "[VERB][" + module + "]: " + text;
+        System.out.println(verbose);
+        Main.addLog(verbose);
+    }
     public static void info(String module, String text) {
         String info = getTimeStamp() + "[INFO][" + module + "]: " + text;
         System.out.println(info);
@@ -23,7 +28,7 @@ public class Logger {
     }
     
     public static void debug(String text) {
-        String debug = getTimeStamp() + "[INFO][DEBUG]: " + text;
+        String debug = getTimeStamp() + "[DEBUG]: " + text;
         System.out.println(debug);
         Main.addLog(debug);
     }

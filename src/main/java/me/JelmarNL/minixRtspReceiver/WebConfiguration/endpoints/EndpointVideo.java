@@ -3,7 +3,6 @@ package me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import me.JelmarNL.minixRtspReceiver.Main;
-import me.JelmarNL.minixRtspReceiver.Video.RtspPlayer;
 import me.JelmarNL.minixRtspReceiver.util.FileConfiguration;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
 
@@ -19,19 +18,21 @@ public class EndpointVideo {
             String cameraIp = new String(Base64.getDecoder().decode(parts[0].split("=", 2)[1]));
             String setupCommands = parts[1].split("=", 2)[1];
             String streamUrl = new String(Base64.getDecoder().decode(parts[2].split("=", 2)[1]));
-            Logger.info("RtspStream", "Restarting RTSP player...");
-            Main.rtspPlayer.end();
             FileConfiguration config = new FileConfiguration("rtsp");
             config.setProperty("cameraIp", cameraIp);
             config.setProperty("setupCommands", setupCommands);
             config.setProperty("streamUrl", streamUrl);
-            Main.rtspPlayer = new RtspPlayer();
-            Main.rtspPlayer.start();
+            restartVideo();
             String responseString = "OK";
             exchange.sendResponseHeaders(200, responseString.length());
             OutputStream responseBody = exchange.getResponseBody();
             responseBody.write(responseString.getBytes());
             responseBody.close();
+        }
+        public static void restartVideo() {
+            Logger.info("RtspStream", "Restarting RTSP player...");
+            Main.rtspPlayer.restart();
+            Logger.info("RtspStream", "Restarted RTSP player");
         }
     }
 

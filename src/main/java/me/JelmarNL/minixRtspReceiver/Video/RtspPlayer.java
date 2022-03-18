@@ -8,10 +8,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import me.JelmarNL.minixRtspReceiver.Main;
+import me.JelmarNL.minixRtspReceiver.WebConfiguration.endpoints.EndpointVideo;
 import me.JelmarNL.minixRtspReceiver.util.FileConfiguration;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurfaceFactory;
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import static javafx.application.Application.launch;
@@ -37,34 +40,22 @@ public class RtspPlayer extends Thread {
         //streamUrl = "rtsp://demo:demo@ipvmdemo.dyndns.org:5541/onvif-media/media.amp?profile=profile_1_h264&sessiontimeout=60&streamtype=unicast";
         //streamUrl = "rtsp://localhost/";
         
-        String base = RtspConfig.getProperty("libUrl", "C:/Program Files/VideoLAN/VLC/");
-        try {
-            System.load(base + "libvlccore.dll");
-            System.load(base + "libvlc.dll");
-            System.load(base + "npvlc.dll");
-            System.load(base + "axvlc.dll");
-        } catch (UnsatisfiedLinkError e) {
-            e.printStackTrace();
-            Logger.error("RtspPlayer", "Could not load vlc libraries, please make sure vlc media player (64bit) is installed at: " + base);
-            state = "Crashed";
-            return;
-        }
         Logger.info("RtspPlayer", "Loaded player");
         if (isFirstLaunch()) {
+            String base = RtspConfig.getProperty("libUrl", "C:/Program Files/VideoLAN/VLC/");
+            try {
+                System.load(base + "libvlccore.dll");
+                System.load(base + "libvlc.dll");
+                System.load(base + "npvlc.dll");
+                System.load(base + "axvlc.dll");
+            } catch (UnsatisfiedLinkError e) {
+                e.printStackTrace();
+                Logger.error("RtspPlayer", "Could not load vlc libraries, please make sure vlc media player (64bit) is installed at: " + base);
+                state = "Crashed";
+                return;
+            }
             Platform.setImplicitExit(false);
             launch(Player.class);
-        } else {
-            Platform.runLater(()-> {
-                try {
-                    Player player = new Player();
-//                    Stage newPrimaryStage = new Stage();
-                    player.start(stage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Logger.error("RtspPlayer", "Failed to restart gui.");
-                    state = "Crashed";
-                }
-            });
         }
     }
 
@@ -84,6 +75,13 @@ public class RtspPlayer extends Thread {
     public void end() {
         Player.instance.stop();
         state = "stopped";
+    }
+    public void restart() {
+        Main.rtspPlayer.state = "Restarting";
+        Platform.runLater(() -> {
+            Player.embeddedMediaPlayer.media().play(createStreamUrl());
+        });
+        Main.rtspPlayer.state = "Running";
     }
 
     private static boolean isFirstLaunch() {
@@ -108,6 +106,33 @@ public class RtspPlayer extends Thread {
             ImageView videoImageView = new ImageView();
             videoImageView.setPreserveRatio(true);
             embeddedMediaPlayer.videoSurface().set(ImageViewVideoSurfaceFactory.videoSurfaceForImageView(videoImageView));
+
+            embeddedMediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+                @Override
+                public void playing(MediaPlayer mediaPlayer) {
+                    Main.rtspPlayer.state = "Running/";
+                }
+
+                @Override
+                public void paused(MediaPlayer mediaPlayer) {
+                }
+
+                @Override
+                public void stopped(MediaPlayer mediaPlayer) {
+                    Logger.debug("Stopped");
+                }
+
+                @Override
+                public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+                }
+
+                @Override
+                public void error(MediaPlayer mediaPlayer) {
+                    Logger.warning("RtspPlayer", "Error in camera stream, reconnecting...");
+                    //Restart video
+                    EndpointVideo.RestartVideo.restartVideo();
+                }
+            });
             
             //Create window
             BorderPane root = new BorderPane();
@@ -152,9 +177,13 @@ public class RtspPlayer extends Thread {
 
         @Override
         public final void stop() {
+            Logger.debug("1");
             embeddedMediaPlayer.controls().stop();
+            Logger.debug("2");
             embeddedMediaPlayer.release();
+            Logger.debug("3");
             mediaPlayerFactory.release();
+            Logger.debug("4");
         }
     }
 }
