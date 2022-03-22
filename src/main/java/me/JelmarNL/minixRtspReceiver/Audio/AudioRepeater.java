@@ -1,5 +1,6 @@
 package me.JelmarNL.minixRtspReceiver.Audio;
 
+import me.JelmarNL.minixRtspReceiver.Main;
 import me.JelmarNL.minixRtspReceiver.util.FileConfiguration;
 import me.JelmarNL.minixRtspReceiver.util.Logger;
 
@@ -25,9 +26,6 @@ public class AudioRepeater extends Thread {
         this.lineIn = AudioDevices.getInputDeviceByName(audioConfig.getProperty("inputDevice", "null"));
         this.lineOut = AudioDevices.getOutputDeviceByName(audioConfig.getProperty("outputDevice", "null"));
         this.buffer = Integer.parseInt(audioConfig.getProperty("buffer", buffer + ""));
-        if (this.lineIn == null || this.lineOut == null) {
-            Logger.error("AudioRepeater", "No input and/or output device selected/found, pick an audio device and restart repeater.");
-        }
     }
 
     /**
@@ -39,8 +37,18 @@ public class AudioRepeater extends Thread {
         if (lineIn == null || lineOut == null) {
             running = false;
             done = true;
-            Logger.error("AudioRepeater", "Some lines do not exist, repeater not started. Check if a microphone and speaker are available.");
-            stoppedReason = "The previously selected audio device is no longer available. Pick and save a new one";
+            Logger.error("AudioRepeater", "Some lines do not exist, repeater restarting... Check if a microphone and speaker are available.");
+            stoppedReason = "The previously selected audio device is no longer available. Pick and save a new one or reconnect the old device.";
+            //Restart to try again
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.end();
+            AudioRepeater audioRepeater = new AudioRepeater();
+            Main.audioRepeater = audioRepeater;
+            audioRepeater.start();
             return;
         }
         byte[] data = new byte[buffer];
@@ -54,6 +62,7 @@ public class AudioRepeater extends Thread {
             running = false;
             done = true;
             return;
+            //TODO: Test when lines not supported exception occurs and auto fix
         }
         lineIn.start();
         lineOut.start();

@@ -17,6 +17,9 @@ import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
 import static javafx.application.Application.launch;
 
 public class RtspPlayer extends Thread {
@@ -75,7 +78,7 @@ public class RtspPlayer extends Thread {
         return new String[]{
                 ":live-caching=0", 
                 ":sout-mux-caching=10",
-                "network-caching=300"
+                ":network-caching=300"
         };
     }
     
@@ -90,9 +93,7 @@ public class RtspPlayer extends Thread {
         } catch (InterruptedException e) {
             Logger.verbose("RtspPlayer", "Reconnect cooldown was interrupted");
         }
-        Platform.runLater(() -> {
-            Player.embeddedMediaPlayer.media().play(createStreamUrl(), getStreamOptions());
-        });
+        Platform.runLater(() -> Player.embeddedMediaPlayer.media().play(createStreamUrl(), getStreamOptions()));
         Main.rtspPlayer.state = "Running";
     }
 
@@ -185,6 +186,8 @@ public class RtspPlayer extends Thread {
             Logger.info("RtspPlayer", "Stream connecting...");
 
             setJavaFxLaunched();
+            
+            //TODO: Check frozen and restart
         }
 
         @Override
@@ -192,6 +195,47 @@ public class RtspPlayer extends Thread {
             embeddedMediaPlayer.controls().stop();
             embeddedMediaPlayer.release();
             mediaPlayerFactory.release();
+        }
+    }
+    
+    class watchdog extends Thread { //TODO: Does an empty room trigger this?
+        private BufferedImage oldImage = null; //TODO: Stop method
+        
+        @Override
+        public void run() {
+            while (true) {
+                if (oldImage == null) {
+                    oldImage = screenshot();
+                } else {
+                    BufferedImage newImage = screenshot();
+                    if (newImage == null || oldImage == null) {
+                        //Just try again
+                        continue;
+                    }
+                    if (newImage.equals(oldImage)) {
+                        //Restart stream
+                        Logger.warning("RtspWatchdog", "Frozen stream has been detected, restarting...");
+                        Platform.runLater(() -> Player.embeddedMediaPlayer.media().play(createStreamUrl(), getStreamOptions()));
+                        Main.rtspPlayer.state = "Running";
+                    }
+                    oldImage = newImage;
+                }
+                try {
+                    Thread.sleep(1000 * 30);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        private BufferedImage screenshot() {
+            try {
+                return new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+            } catch (AWTException e) {
+                e.printStackTrace();
+                Logger.warning("RtspWatchdog", "Failed to verify is stream is running.");
+            }
+            return null;
         }
     }
 }
