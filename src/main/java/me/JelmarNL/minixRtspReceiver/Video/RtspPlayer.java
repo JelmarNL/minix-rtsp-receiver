@@ -30,6 +30,7 @@ public class RtspPlayer extends Thread {
     private static Stage stage;
     //Check if it's the first time we start javafx cuz it complains otherwise
     private static boolean firstLaunch = true;
+    private final Watchdog watchdog = new Watchdog();
     
     @Override
     public void run() {
@@ -83,6 +84,7 @@ public class RtspPlayer extends Thread {
     }
     
     public void end() {
+        watchdog.end();
         Player.instance.stop();
         state = "stopped";
     }
@@ -187,7 +189,8 @@ public class RtspPlayer extends Thread {
 
             setJavaFxLaunched();
             
-            //TODO: Check frozen and restart
+            //Frozen checker
+            Main.rtspPlayer.watchdog.start();
         }
 
         @Override
@@ -198,12 +201,13 @@ public class RtspPlayer extends Thread {
         }
     }
     
-    class watchdog extends Thread { //TODO: Does an empty room trigger this?
-        private BufferedImage oldImage = null; //TODO: Stop method
+    class Watchdog extends Thread { //TODO: Does an empty room trigger this?
+        private BufferedImage oldImage = null;
+        private boolean running = true;
         
         @Override
         public void run() {
-            while (true) {
+            while (running) {
                 if (oldImage == null) {
                     oldImage = screenshot();
                 } else {
@@ -221,11 +225,14 @@ public class RtspPlayer extends Thread {
                     oldImage = newImage;
                 }
                 try {
-                    Thread.sleep(1000 * 30);
+                    Thread.sleep(1000 * 15);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+        }
+        public void end() {
+            running = false;
         }
         
         private BufferedImage screenshot() {
