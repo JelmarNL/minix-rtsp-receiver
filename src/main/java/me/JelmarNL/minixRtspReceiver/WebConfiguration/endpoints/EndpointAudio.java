@@ -59,16 +59,30 @@ public class EndpointAudio {
         }
     }
     
+    public static class GetRepeaterSize implements  HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String responseString = Main.audioRepeater.getBuffer() + "";
+            exchange.sendResponseHeaders(200, responseString.length());
+            OutputStream responseBody = exchange.getResponseBody();
+            responseBody.write(responseString.getBytes());
+            responseBody.close();
+        }
+    }
+    
     public static class RestartAudio implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String[] parts = exchange.getRequestURI().getQuery().split("&");
             String inputDevice = parts[0].split("=", 2)[1];
             String outputDevice = parts[1].split("=", 2)[1];
+            String bufferSize = parts[2].split("=", 2)[1];
             Main.audioRepeater.getAudioConfig().setProperty("inputDevice", inputDevice);
             Main.audioRepeater.getAudioConfig().setProperty("outputDevice", outputDevice);
+            Main.audioRepeater.getAudioConfig().setProperty("buffer", bufferSize);
             Logger.info("AudioRepeater", "Set input device to: " + inputDevice);
             Logger.info("AudioRepeater", "Set output device to: " + outputDevice);
+            Logger.info("AudioRepeater", "Set buffer size to: " + bufferSize);
             Main.audioRepeater.end();
             Main.audioRepeater = new AudioRepeater();
             Main.audioRepeater.start();

@@ -32,6 +32,7 @@ public class Webserver extends Thread {
         //Audio repeater endpoints
         server.createContext("/endpoints/audio/getaudioinput", new EndpointAudio.GetAudioInput());
         server.createContext("/endpoints/audio/getaudiooutput", new EndpointAudio.GetAudioOutput());
+        server.createContext("/endpoints/audio/getbuffer", new EndpointAudio.GetRepeaterSize());
         server.createContext("/endpoints/audio/restartaudio", new EndpointAudio.RestartAudio());
         server.createContext("/endpoints/audio/getaudiorepeaterstatus", new EndpointAudio.GetAudioRepeaterStatus());
         //RTSP Client endpoints

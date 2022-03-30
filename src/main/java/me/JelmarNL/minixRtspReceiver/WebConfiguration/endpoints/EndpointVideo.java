@@ -16,11 +16,11 @@ public class EndpointVideo {
         public void handle(HttpExchange exchange) throws IOException {
             String[] parts = exchange.getRequestURI().getQuery().split("&");
             String cameraIp = new String(Base64.getDecoder().decode(parts[0].split("=", 2)[1]));
-            String setupCommands = parts[1].split("=", 2)[1];
+            String streamOptions = parts[1].split("=", 2)[1];
             String streamUrl = new String(Base64.getDecoder().decode(parts[2].split("=", 2)[1]));
             FileConfiguration config = new FileConfiguration("rtsp");
             config.setProperty("cameraIp", cameraIp);
-            config.setProperty("setupCommands", setupCommands);
+            config.setProperty("streamOptions", streamOptions);
             config.setProperty("streamUrl", streamUrl);
             restartVideo();
             String responseString = "OK";
@@ -41,9 +41,9 @@ public class EndpointVideo {
         public void handle(HttpExchange exchange) throws IOException {
             FileConfiguration config = new FileConfiguration("rtsp");
             String cameraIp = Base64.getEncoder().encodeToString(config.getProperty("cameraIp", "0.0.0.0:554").getBytes());
-            String setupCommands = config.getProperty("setupCommands", "");
+            String streamOptions = config.getProperty("streamOptions", Base64.getEncoder().encodeToString(":live-caching=0\n:sout-mux-caching=10\n:network-caching=50".getBytes()));
             String streamUrl = Base64.getEncoder().encodeToString(config.getProperty("streamUrl", "rtsp://%ip%/mediainput/h264/stream_1").getBytes());
-            String responseString = cameraIp + "||" + setupCommands + "||" + streamUrl;
+            String responseString = cameraIp + "||" + streamOptions + "||" + streamUrl;
             exchange.sendResponseHeaders(200, responseString.length());
             OutputStream responseBody = exchange.getResponseBody();
             responseBody.write(responseString.getBytes());

@@ -19,12 +19,13 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Base64;
 
 import static javafx.application.Application.launch;
 
 public class RtspPlayer extends Thread {
     private String cameraIp;
-    private String setupCommands; //As base64 //TODO: Implement
+    private String streamOptions; //As base64 //TODO: Implement
     private String streamUrl;
     private String state;
     private static Stage stage;
@@ -38,7 +39,7 @@ public class RtspPlayer extends Thread {
         Logger.info("RtspPlayer", "Loading player...");
         FileConfiguration RtspConfig = new FileConfiguration("rtsp");
         cameraIp = RtspConfig.getProperty("cameraIp", "192.168.0.10:554");
-        setupCommands = RtspConfig.getProperty("setupCommands", "");
+        streamOptions = RtspConfig.getProperty("streamOptions", Base64.getEncoder().encodeToString(":live-caching=0\n:sout-mux-caching=10\n:network-caching=50".getBytes()));
         streamUrl = RtspConfig.getProperty("streamUrl", "rtsp://%ip%/mediainput/h264/stream_1");
         //Test stream:
         //streamUrl = "rtsp://demo:demo@ipvmdemo.dyndns.org:5541/onvif-media/media.amp?profile=profile_1_h264&sessiontimeout=60&streamtype=unicast";
@@ -76,11 +77,7 @@ public class RtspPlayer extends Thread {
         return streamUrl.replace("%ip%", cameraIp);
     }
     private String[] getStreamOptions() {
-        return new String[]{
-                ":live-caching=0", 
-                ":sout-mux-caching=10",
-                ":network-caching=300"
-        };
+        return new String(Base64.getDecoder().decode(streamOptions)).split("\n");
     }
     
     public void end() {

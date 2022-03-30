@@ -62,7 +62,7 @@ public class AudioRepeater extends Thread {
             running = false;
             done = true;
             return;
-            //TODO: Test when lines not supported exception occurs and auto fix
+            //TODO: Test when lines not supported exception occurs and fix or automatically restart
         }
         lineIn.start();
         lineOut.start();
@@ -104,5 +104,12 @@ public class AudioRepeater extends Thread {
 
     public FileConfiguration getAudioConfig() {
         return audioConfig;
+    }
+
+    public int getBuffer() {
+        return buffer;
+    }
+    public void setBuffer(int buffer) {
+        this.buffer = buffer;
     }
 }

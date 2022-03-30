@@ -32,10 +32,15 @@ $.get("/endpoints/audio/getaudiooutput", function(data) {
     $("#audioOutput").html(data);
 });
 
+$.get("/endpoints/audio/getbuffer", function(data) {
+    $("#audioBuffer").val(data);
+});
+
 $("#restartAudio").on("click", function() {
     let input = $("#audioInput").val();
     let output = $("#audioOutput").val();
-    $.get("/endpoints/audio/restartaudio", {"input": input, "output": output}, function(data) {
+    let buffer = $("#audioBuffer").val();
+    $.get("/endpoints/audio/restartaudio", {"input": input, "output": output, "repeater": buffer}, function(data) {
         alert("Audio restart: \n" + data);
         location.reload();
     });
@@ -53,15 +58,15 @@ setInterval(function() {
 $.get("/endpoints/video/getvideoconfig", function(data) {
     data = data.split("||");
     $("#cameraIp").val(atob(data[0]));
-    $("#setupCommands").val(atob(data[1]));
+    $("#streamOptions").val(atob(data[1]));
     $("#streamUrl").val(atob(data[2]));
 });
 
 $("#restartVideo").on("click", function() {
     let cameraIp = btoa($("#cameraIp").val());
-    let setupCommands = btoa($("#setupCommands").val());
+    let streamOptions = btoa($("#streamOptions").val());
     let streamUrl = btoa($("#streamUrl").val());
-    $.get("/endpoints/video/restartvideo", {"cameraIp": cameraIp, "setupCommands": setupCommands, "streamUrl": streamUrl}, function(data) {
+    $.get("/endpoints/video/restartvideo", {"cameraIp": cameraIp, "streamOptions": streamOptions, "streamUrl": streamUrl}, function(data) {
         alert("Video restart: \n" + data);
         location.reload();
     });

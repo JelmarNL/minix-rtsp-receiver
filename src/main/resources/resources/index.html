@@ -60,6 +60,12 @@
                     </select>
                     <br>
                     <br>
+                    <h4>Repeater buffer size</h4>
+                    <label for="audioBuffer">Multiple of 4 required</label>
+                    <br>
+                    <input type="number" id="audioBuffer" placeholder="2048">
+                    <br>
+                    <br>
                     <br>
                     <button class="btn btn-primary" id="restartAudio">Save and reload audio</button>
                     <p id="audioState">State: unknown</p>
@@ -70,13 +76,13 @@
                     <input type="text" id="cameraIp" placeholder="0.0.0.0:554">
                     <br>
                     <br>
-                    <h4 style="display: none">Setup commands (todo if required)</h4>
-                    <label style="width: 100%; height: 10em; display: none">
-                        One setting request per line, comment lines denoted with '>'.
-                        <textarea id="setupCommands" style="width: 100%; height: 100%"></textarea>
+                    <h4>Stream options</h4>
+                    <label style="width: 100%; height: 10em;">
+                        One option per line.
+                        <textarea id="streamOptions" style="width: 100%; height: 100%"></textarea>
                     </label>
-                    <br style="display: none">
-                    <br style="display: none">
+                    <br>
+                    <br>
                     <h4>RTSP stream url</h4>
                     <input type="text" id="streamUrl" name="rtsp_url" placeholder="RTSP url" style="width: 100%">
                     <br>
