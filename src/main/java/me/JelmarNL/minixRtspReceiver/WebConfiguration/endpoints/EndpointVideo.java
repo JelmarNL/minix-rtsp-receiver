@@ -61,16 +61,4 @@ public class EndpointVideo {
             responseBody.close();
         }
     }
-
-    public static class GetNetworkScan implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            //TODO: Scan network for cameras
-            String responseString = "Not implemented";
-            exchange.sendResponseHeaders(200, responseString.length());
-            OutputStream responseBody = exchange.getResponseBody();
-            responseBody.write(responseString.getBytes());
-            responseBody.close();
-        }
-    }
 }

@@ -39,7 +39,6 @@ public class Webserver extends Thread {
         server.createContext("/endpoints/video/getvideoconfig", new EndpointVideo.GetVideoConfig());
         server.createContext("/endpoints/video/restartvideo", new EndpointVideo.RestartVideo());
         server.createContext("/endpoints/video/getvideostatus", new EndpointVideo.GetVideoStatus());
-        server.createContext("/endpoints/video/getdetectedcameras", new EndpointVideo.GetNetworkScan());
         //Executor
         server.setExecutor(null); // creates a default executor
     }

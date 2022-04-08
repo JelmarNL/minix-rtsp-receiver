@@ -25,7 +25,7 @@ import static javafx.application.Application.launch;
 
 public class RtspPlayer extends Thread {
     private String cameraIp;
-    private String streamOptions; //As base64 //TODO: Implement
+    private String streamOptions; //As base64
     private String streamUrl;
     private String state;
     private static Stage stage;
