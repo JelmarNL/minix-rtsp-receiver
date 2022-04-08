@@ -5,7 +5,7 @@ VLCJ with Javafx for receiving a RTSP stream and the java sound api for repeatin
 
 Webcontrol on port 80
 
-# Runnable on 32bit junk
+## Runnable on 32bit
 ### Windows requirements:
 bellsoft-jdk11.0.14.1+1-windows-i586-full (msi installer) (Liberica Full JDK 11.0.14.1+1 x86 32 bit for Windows) https://bell-sw.com/pages/downloads/#/java-11-lts   
 vlc-3.0.16-win32 (exe installer)  
